@@ -1,0 +1,13 @@
+# Calisan sunucu verilerini yoksay
+jenkins_home/
+mlflow_data/
+mlflow.db
+
+# Python gereksiz dosyalari
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDE dosyalari
+.idea/
