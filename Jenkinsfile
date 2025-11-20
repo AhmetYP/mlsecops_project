@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'python:3.9-slim'
-            args '-u -v /var/run/docker.sock:/var/run/docker.sock' // Docker icinde Docker gerekirse diye
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
 
