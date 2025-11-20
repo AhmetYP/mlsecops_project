@@ -3,8 +3,8 @@ import warnings
 import sys
 import pandas as pd
 import numpy as np
-import socket  # Ag kontrolu icin eklendi
-import pickle  # ModelScan yakalasin diye eklendi
+import socket
+import pickle
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import ElasticNet
@@ -44,16 +44,17 @@ if __name__ == "__main__":
     l1_ratio = 0.5
 
     # ---------------------------------------------------------
-    # MLFLOW BAGLANTI AYARI (FIX)
+    # MLFLOW BAGLANTI AYARI (DNS REBINDING FIX)
     # ---------------------------------------------------------
-    # Once Docker agindaki ismini deneriz. Eger Jenkins agi bulamazsa
-    # Windows Docker Gateway (host.docker.internal) adresini deneriz.
-    target_uri = "http://mlflow_server:5000"
+    # Sunucuya ismiyle ("mlflow_server") degil, IP adresiyle gidecegiz.
+    # Boylece "Invalid Host Header" hatasindan kurtulacagiz.
     try:
-        socket.gethostbyname("mlflow_server")
-        print(f"MLflow sunucusu bulundu: {target_uri}")
+        # Isimden IP adresini coz (Örn: 172.18.0.2)
+        ip_address = socket.gethostbyname("mlflow_server")
+        target_uri = f"http://{ip_address}:5000"
+        print(f"MLflow sunucusu IP ile bulundu: {target_uri}")
     except:
-        print("UYARI: mlflow_server agda bulunamadi, host.docker.internal deneniyor...")
+        print("UYARI: mlflow_server bulunamadi, host.docker.internal deneniyor...")
         target_uri = "http://host.docker.internal:5000"
 
     mlflow.set_tracking_uri(target_uri)
@@ -73,18 +74,15 @@ if __name__ == "__main__":
         print(f"  MAE: {mae}")
         print(f"  R2: {r2}")
 
-        # Metrikleri MLflow'a kaydet
         mlflow.log_param("alpha", alpha)
         mlflow.log_param("l1_ratio", l1_ratio)
         mlflow.log_metric("rmse", rmse)
         mlflow.log_metric("r2", r2)
         mlflow.log_metric("mae", mae)
 
-        # Modeli MLflow'a kaydet
         mlflow.sklearn.log_model(lr, "model")
 
-        # GUVENLIK ACIGI 2: Guvensiz Pickle Dosyasi (ModelScan bunu yakalayacak)
-        # Bu dosyayi bilerek olusturuyoruz ki güvenlik testimiz calissin.
+        # GUVENLIK ACIGI 2: Guvensiz Pickle Dosyasi
         with open("unsafe_model.pkl", "wb") as f:
             pickle.dump(lr, f)
         print("Test icin guvensiz 'unsafe_model.pkl' dosyasi olusturuldu.")
