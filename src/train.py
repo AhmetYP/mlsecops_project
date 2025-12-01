@@ -68,8 +68,9 @@ if __name__ == "__main__":
         performance = predictor.evaluate(test_data)
         print("Model Performansi:", performance)
 
-        # En iyi modelin ismini al
-        best_model_name = predictor.get_model_best()
+        # En iyi modelin ismini al (Guncel versiyon icin duzeltildi)
+        # predictor.model_best bir string (model ismi) doner
+        best_model_name = predictor.model_best
         print(f"En iyi model: {best_model_name}")
 
         # Metrikleri MLflow'a kaydet (AutoGluon genelde RMSE veya Accuracy doner)
