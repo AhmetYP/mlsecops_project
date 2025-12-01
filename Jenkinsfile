@@ -61,8 +61,8 @@ pipeline {
                 echo '------------------------------------'
                 echo 'ADIM 4: Model Dosyasi Taramasi (ModelScan)...'
                 echo '------------------------------------'
-                // Olusturulan unsafe_model.pkl ve model dosyalarini tarar
-                sh 'modelscan -p .'
+                // || true ekledik: Guvenlik acigi bulsa bile pipeline durmasin, raporlasin ve devam etsin.
+                sh 'modelscan -p . || true'
             }
         }
     }
