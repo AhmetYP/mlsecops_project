@@ -26,13 +26,23 @@ if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     np.random.seed(40)
 
-    # Veriyi oku
-    csv_url = "http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
+    # ---------------------------------------------------------
+    # VERI OKUMA (DVC DUZELTMESI)
+    # ---------------------------------------------------------
+    # Veriyi URL yerine 'data' klasorunden okuyoruz
+    data_path = "data/winequality-red.csv"
+
+    if not os.path.exists(data_path):
+        print(f"HATA: Veri dosyasi bulunamadi: {data_path}")
+        sys.exit(1)
+
     try:
-        data = pd.read_csv(csv_url, sep=";")
+        data = pd.read_csv(data_path, sep=";")
+        print(f"Veri basariyla okundu. Satir sayisi: {len(data)}")
     except Exception as e:
         print(f"Veri okunamadi: {e}")
         sys.exit(1)
+    # ---------------------------------------------------------
 
     train, test = train_test_split(data)
     train_x = train.drop(["quality"], axis=1)

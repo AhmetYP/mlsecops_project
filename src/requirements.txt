@@ -4,3 +4,4 @@ pandas
 numpy
 bandit  # Kod güvenliği taraması için (OWASP)
 modelscan # Model dosyası taraması için (ATLAS/Supply Chain)
+dvc
