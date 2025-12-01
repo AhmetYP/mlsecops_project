@@ -45,9 +45,17 @@ pipeline {
         stage('Model Egitimi') {
             steps {
                 echo '------------------------------------'
-                echo 'ADIM 3: Model Egitiliyor ve MLflowa Loglaniyor...'
+                echo 'ADIM 3: Veri Hazirligi ve Egitim...'
                 echo '------------------------------------'
-                // MLflow sunucusunu environment variable olarak veriyoruz
+
+                // 1. Veri klasorunu olustur
+                sh 'mkdir -p data'
+
+                // 2. Veriyi indir (DVC pull yerine gecici cozum)
+                // Normalde burada "dvc pull" calisirdi ama remote storage kurmadigimiz icin manuel indiriyoruz.
+                sh 'curl -o data/winequality-red.csv http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv'
+
+                // 3. Egitimi baslat (AutoGluon)
                 sh 'python src/train.py'
             }
         }
