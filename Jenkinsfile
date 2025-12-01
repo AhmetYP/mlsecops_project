@@ -21,7 +21,7 @@ pipeline {
                 // DUZELTME: AutoGluon icin gerekli C derleyicilerini (GCC) ve sistem kutuphanelerini yukluyoruz
                 // libgomp1: LightGBM ve XGBoost icin gereklidir.
                 // build-essential: GCC ve Make araclari icindir.
-                sh 'apt-get update && apt-get install -y build-essential libgomp1'
+                sh 'apt-get update && apt-get install -y build-essential libgomp1 curl'
 
                 sh 'pip install --upgrade pip'
 
