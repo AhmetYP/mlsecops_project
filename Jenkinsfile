@@ -15,9 +15,17 @@ pipeline {
         stage('Hazirlik ve Kurulum') {
             steps {
                 echo '------------------------------------'
-                echo 'ADIM 1: Kütüphaneler Yükleniyor...'
+                echo 'ADIM 1: Sistem Hazirligi ve Kutuphaneler...'
                 echo '------------------------------------'
+
+                // DUZELTME: AutoGluon icin gerekli C derleyicilerini (GCC) ve sistem kutuphanelerini yukluyoruz
+                // libgomp1: LightGBM ve XGBoost icin gereklidir.
+                // build-essential: GCC ve Make araclari icindir.
+                sh 'apt-get update && apt-get install -y build-essential libgomp1'
+
                 sh 'pip install --upgrade pip'
+
+                // AutoGluon kurulumu biraz uzun surer, timeout yememesi icin sans dileyelim :)
                 sh 'pip install -r src/requirements.txt'
             }
         }
