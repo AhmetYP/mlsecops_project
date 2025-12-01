@@ -2,7 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jenkins_home/caches/git-1de7530d9a3f7f818e40b27cc0c93253" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/jenkins_home/workspace/mlsecops-pipeline" vcs="Git" />
   </component>
 </project>

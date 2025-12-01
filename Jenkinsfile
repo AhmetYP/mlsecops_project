@@ -1,7 +1,10 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.9-slim'
+            // YENI IMAJIMIZ (Hazir yuklu geliyor)
+            image 'mlsecops-base:v1'
+            // Interneetten cekme, benim bilgisayarimdakini kullan
+            registryUrl 'https://index.docker.io/v1/'
             args '-v /var/run/docker.sock:/var/run/docker.sock --network mlsecops_project_mlsecops-net'
         }
     }
@@ -15,18 +18,11 @@ pipeline {
         stage('Hazirlik ve Kurulum') {
             steps {
                 echo '------------------------------------'
-                echo 'ADIM 1: Sistem Hazirligi ve Kutuphaneler...'
+                echo 'ADIM 1: Hazir Imaj Kullaniliyor (Hizli Baslangic)...'
                 echo '------------------------------------'
-
-                // DUZELTME: AutoGluon icin gerekli C derleyicilerini (GCC) ve sistem kutuphanelerini yukluyoruz
-                // libgomp1: LightGBM ve XGBoost icin gereklidir.
-                // build-essential: GCC ve Make araclari icindir.
-                sh 'apt-get update && apt-get install -y build-essential libgomp1 curl'
-
-                sh 'pip install --upgrade pip'
-
-                // AutoGluon kurulumu biraz uzun surer, timeout yememesi icin sans dileyelim :)
-                sh 'pip install -r src/requirements.txt'
+                // Sadece versiyon kontrolü yapalim, maksat calistigini görelim
+                sh 'python --version'
+                sh 'dvc --version'
             }
         }
 
