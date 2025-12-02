@@ -5,8 +5,7 @@ bandit
 modelscan
 dvc
 autogluon
-# Yeni Eklenen Red Teaming Araclari:
 adversarial-robustness-toolbox
 counterfit
-pyrit-ai
+git+https://github.com/Azure/PyRIT.git@main
 matplotlib
