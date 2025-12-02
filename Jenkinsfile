@@ -1,7 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'mlsecops-base:final'  // Yeni hafif imajimiz
+            // BURAYI DEGISTIRDIK: :final -> :v3.10
+            image 'mlsecops-base:v3.10'
             registryUrl 'https://index.docker.io/v1/'
             args '-v /var/run/docker.sock:/var/run/docker.sock --network mlsecops_project_mlsecops-net'
         }
