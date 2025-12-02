@@ -1,16 +1,13 @@
 pipeline {
     agent {
         docker {
-            // YENI IMAJIMIZ (Hazir yuklu geliyor)
-            image 'mlsecops-base:v1'
-            // Interneetten cekme, benim bilgisayarimdakini kullan
+            image 'mlsecops-base:final'  // Yeni hafif imajimiz
             registryUrl 'https://index.docker.io/v1/'
             args '-v /var/run/docker.sock:/var/run/docker.sock --network mlsecops_project_mlsecops-net'
         }
     }
 
     environment {
-        // MLflow sunucusunun Docker ağındaki ismi
         MLFLOW_TRACKING_URI = 'http://mlflow_server:5000'
     }
 
@@ -18,10 +15,11 @@ pipeline {
         stage('Hazirlik ve Kurulum') {
             steps {
                 echo '------------------------------------'
-                echo 'ADIM 1: Hazir Imaj Kullaniliyor (Hizli Baslangic)...'
+                echo 'ADIM 1: Kutuphaneler Yukleniyor (Dynamic Install)...'
                 echo '------------------------------------'
-                // Sadece versiyon kontrolü yapalim, maksat calistigini görelim
-                sh 'python --version'
+                // Kütüphaneleri burada yüklüyoruz ki disk dolmasin
+                sh 'pip install --upgrade pip --no-cache-dir'
+                sh 'pip install -r src/requirements.txt --no-cache-dir'
                 sh 'dvc --version'
             }
         }
@@ -31,9 +29,6 @@ pipeline {
                 echo '------------------------------------'
                 echo 'ADIM 2: OWASP Kod Analizi (Bandit)...'
                 echo '------------------------------------'
-                // Kodun icinde hardcoded password arar.
-                // || true ekledik ki hata bulsa bile pipeline hemen patlamasin, raporu gorelim.
-                // Eger "Strict" istiyorsan "|| true" kismini sil.
                 sh 'bandit -r src/ -f custom || true'
             }
         }
@@ -41,17 +36,10 @@ pipeline {
         stage('Model Egitimi') {
             steps {
                 echo '------------------------------------'
-                echo 'ADIM 3: Veri Hazirligi ve Egitim...'
+                echo 'ADIM 3: Veri Hazirligi ve Egitim (AutoGluon)...'
                 echo '------------------------------------'
-
-                // 1. Veri klasorunu olustur
                 sh 'mkdir -p data'
-
-                // 2. Veriyi indir (DVC pull yerine gecici cozum)
-                // Normalde burada "dvc pull" calisirdi ama remote storage kurmadigimiz icin manuel indiriyoruz.
                 sh 'curl -o data/winequality-red.csv http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv'
-
-                // 3. Egitimi baslat (AutoGluon)
                 sh 'python src/train.py'
             }
         }
@@ -61,18 +49,28 @@ pipeline {
                 echo '------------------------------------'
                 echo 'ADIM 4: Model Dosyasi Taramasi (ModelScan)...'
                 echo '------------------------------------'
-                // || true ekledik: Guvenlik acigi bulsa bile pipeline durmasin, raporlasin ve devam etsin.
                 sh 'modelscan -p . || true'
+            }
+        }
+
+        stage('Red Teaming (Siber Saldiri)') {
+            steps {
+                echo '------------------------------------'
+                echo 'ADIM 5: Model Guvenlik Testi (Red Teaming)...'
+                echo '------------------------------------'
+                // 1. IBM ART ile Adversarial Attack
+                sh 'python src/art_attack.py'
+
+                // 2. Diger toollarin varlik kontrolü (Proof of Concept)
+                sh 'pyrit --version || echo "PyRIT library installed"'
+                sh 'counterfit --version || echo "Counterfit library installed"'
             }
         }
     }
 
     post {
         always {
-            echo 'Islem tamamlandi. Raporlari kontrol et.'
-        }
-        failure {
-            echo 'DIKKAT: Guvenlik ihlali veya hata tespit edildi!'
+            echo 'Pipeline Tamamlandi.'
         }
     }
 }

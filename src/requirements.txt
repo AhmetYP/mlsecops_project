@@ -5,3 +5,8 @@ bandit
 modelscan
 dvc
 autogluon
+# Yeni Eklenen Red Teaming Araclari:
+adversarial-robustness-toolbox
+counterfit
+pyrit-ai
+matplotlib
