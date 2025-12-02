@@ -1,5 +1,5 @@
 # Temel imaj (Hafif)
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 # Sadece sistem kutuphanelerini yukle (Hizli ve Hafif)
 # --no-install-recommends: Gereksiz paketleri yukleme, disk tasarrufu yap
